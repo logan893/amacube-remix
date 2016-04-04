@@ -11,5 +11,5 @@
 */
 
 # The database connection settings where amavis stores settings and emails
-$rcmail_config['amacube_db_dsn'] = 'mysql://<MYSQL-USER>:<MYSQL-PASSWORD>@<MYSQL-HOST>/<MYSQL-DATABASE>';
+$rcmail_config['amacube_remix_db_dsn'] = 'mysql://<MYSQL-USER>:<MYSQL-PASSWORD>@<MYSQL-HOST>/<MYSQL-DATABASE>';
 ?>
