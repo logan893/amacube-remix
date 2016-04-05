@@ -215,21 +215,21 @@ class amacube_remix_wblist extends rcube_plugin
         foreach( $results['items'] AS $item ) {
           # Build Results Tbody
           $output['raw'] .= html::tag( 'tr', null,
-                                       html::tag( 'td', array( 'class' => 'ac_sender' ), $item['email'] ) .
-                                       html::tag( 'td', array( 'class' => 'ac_policy' ), ( $item['wb'] == 'W' ) ? 'Whitelist' : 'Blacklist'  ) .
                                        html::tag( 'td', array( 'class' => 'ac_action' ),
                                                   html::tag( 'div', array( 'id' => $item['sid'] ),
                                                              html::tag( 'a', array( 'href' => '#', 'onclick' => 'rcmail.command(\'plugin.request_delete_entry\', this)' ),
                                                                         html::tag( 'img', array( 'alt' => 'Delete', 'src' => 'plugins/amacube_remix_wblist/media/waste.png', 'title' => 'Delete' ) )
                                                                       )
                                                            )
-                                                )
-                                     );
+                                                ) .
+                                       html::tag( 'td', array( 'class' => 'ac_policy' ), ( $item['wb'] == 'W' ) ? 'Whitelist' : 'Blacklist'  ) .
+                                       html::tag( 'td', array( 'class' => 'ac_sender' ), $item['email'] )
+                                       );
           
         }
       } else {
         $output['raw'] .= html::tag( 'tr', null,
-                                     html::tag( 'td', array( 'class' => 'ac_sender', 'colspan' => '4', 'style' => 'text-align: center' ), $this->gettext( 'no_entries' ) )
+                                     html::tag( 'td', array( 'class' => 'ac_sender', 'colspan' => '3', 'style' => 'text-align: center' ), $this->gettext( 'no_entries' ) )
                                    );
       }
     } else {
