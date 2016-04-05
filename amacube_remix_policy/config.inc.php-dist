@@ -13,6 +13,18 @@
 # The database connection settings where amavis stores settings and emails
 $rcmail_config['amacube_remix_db_dsn'] = 'mysql://<MYSQL-USER>:<MYSQL-PASSWORD>@<MYSQL-HOST>/<MYSQL-DATABASE>';
 
+# List of policies which we allow users to set (will force default settings)
+$rcmail_config['amacube_remix_policy_access'] = array(
+  'allow_virus_settings' => false,                    // bool {N/Y} - affects virus_lover, bypass_virus_checks, virus_quarantine_to
+  'allow_virus_settings_destination' => false,        // bool {N/Y} - affects virus_quarantine_to
+  'allow_spam_settings' => true,                      // bool {N/Y}
+  'allow_spam_settings_destination' => false,         // bool {N/Y}
+  'allow_banned_files_settings' => false,             // bool {N/Y}
+  'allow_banned_files_settings_destination' => false, // bool {N/Y}
+  'allow_bad_header_settings' => false,               // bool {N/Y}
+  'allow_bad_header_settings_destination' => false    // bool {N/Y}
+);
+
 # Default Initial Policy Settings.
 $rcmail_config['amacube_remix_default_policy'] = array(
   'virus_lover' => false,                 // bool {N/Y}
