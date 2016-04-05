@@ -15,9 +15,10 @@
 <roundcube:endif />
 
 <div id="pluginbody" class="uibox contentbox">
-	<roundcube:object name="plugin.body" />
-	<div class="wblist_form">
-		<form class="propform boxcontent" id="amacube_remix_wblist_form" name="amacube_remix_wblist_form" method="post" action="#">
+    <roundcube:object name="plugin.body" />
+    <div class="boxcontent scroller">
+	<div id="amacube_remix_wblist">
+		<form class="propform boxcontent" id="amacube_remix_wblist_form" name="amacube_remix_wblist_form" method="post" action="#" onsubmit="return rcmail.command('plugin.request_add_entry','',this,event)">
 			<fieldset>
 				<legend>Add Entry</legend>
 				<table class="propform" cols="2">
@@ -47,7 +48,7 @@
 				</table>
 			</fieldset>
 			<p>
-				<input type="button" class="button mainaction" id="rcmbtn117" onclick="return rcmail.command('plugin.request_add_entry','',this,event)" value="Save">
+				<input type="submit" class="button mainaction" id="rcmbtn117" value="Save">
 			</p>
 		</form>
 		<div class="wblist_instruction" >
@@ -66,26 +67,27 @@
 		</div>
 	</div>
 	
-	<div class="wblist_list">
-		<div class="uibox amacube" id="mailview-top">
+	<div>
+		<div class="uibox amacube" id="">
 			<div class="boxlistcontent" id="messagelistcontainer">
 				<div id="messagelist" class="loading">
-					<table class="records-table messagelist sortheader fixedheader fixedcopy" style="position: fixed;">
+					<table class="records-table messagelist sortheader" id="messagelist">
 						<thead>
 							<tr>
-								<td class="ac_sender">
-									<a class="ac_sort_asc" href="#" id="sort_by_sender" onclick="rcmail.command('plugin.request_sort_by', this);" >Sender / Domain</a>
-								</td>
+								<td class="ac_action">&nbsp;</td>
 								<td class="ac_policy">
 									<a class="ac_sort_none" href="#" id="sort_by_policy" onclick="rcmail.command('plugin.request_sort_by', this);" >Policy</a>
 								</td>
-								<td class="ac_action">&nbsp;</td>
+								<td class="ac_sender">
+									<a class="ac_sort_asc" href="#" id="sort_by_sender" onclick="rcmail.command('plugin.request_sort_by', this);" >Sender / Domain</a>
+								</td>
 							</tr>
 						</thead>
 						<tbody>
+							<roundcube:object name="plugin.body.list" />
 						</tbody>
 					</table>
-					<table class="records-table messagelist sortheader fixedheader" id="messagelist">
+					<!--table class="records-table messagelist sortheader" id="messagelist">
 						<thead>
 							<tr>
 								<td class="ac_sender">
@@ -98,13 +100,13 @@
 							</tr>
 						</thead>
 						<tbody>
-							<roundcube:object name="plugin.body.list" />
 						</tbody>
-					</table>
+					</table-->
 				</div>
 			</div>
 		</div>
 	</div>
+    </div>
 </div>
 
 </div>
