@@ -81,7 +81,7 @@ class amacube_remix_policy extends rcube_plugin
   function _build_policy_form() {
     include_once( 'AmavisPolicy.php' );
     
-    $this->storage = new AmavisPolicy( $this->rcmail->config->get( 'amacube_remix_db_dsn' ), $this->rcmail->config->get( 'amacube_remix_default_policy' ) );
+    $this->storage = new AmavisPolicy( $this->rcmail->config->get( 'amacube_remix_db_dsn' ), $this->rcmail->config->get( 'amacube_remix_default_policy' ), $this->rcmail->config->get( 'amacube_remix_policy_access' ) );
     
     if( !$this->storage->policy_pk )
       $this->rcmail->output->command( 'display_message', $this->gettext( 'policy_default_message' ), 'warning' );
@@ -115,7 +115,8 @@ class amacube_remix_policy extends rcube_plugin
                       );
     
     # Spam Check Quarantine Settings
-    $tr[] = html::tag( 'tr', array( 'id' => 'spam_check_quarantine_settings', 'style' => ( $this->storage->is_check_activated_checkbox( 'spam' ) ) ? 'display: table-row' : 'display: none' ),
+    $tr[] = html::tag( 'tr', array( 'id' => 'spam_check_quarantine_settings'.( $this->storage->get_policy_access( array( 'allow_spam_settings','allow_spam_settings_destination') ) ? '' : '_hidden'),
+                                    'style' => ( $this->storage->is_check_activated_checkbox( 'spam' ) &&  $this->storage->get_policy_access( array('allow_spam_settings','allow_spam_settings_destination' ) )  ) ? 'display: table-row' : 'display: none' ),
                       html::tag( 'td', array( 'class' => 'title' ), html::label( 'spam_check_destination', Q( $this->gettext( 'section_spam_settings' ) ) ) ) .
                       html::tag( 'td', null,
                                 html::tag( 'select', array( 'name' => '_spam_check_destination' ),
@@ -130,7 +131,7 @@ class amacube_remix_policy extends rcube_plugin
       $table .= $row;
     
     $table = html::tag( 'table', array( 'class' => 'propform', 'cols' => '2' ), $table );
-    $spam = html::tag('fieldset', null, html::tag('legend', null, Q( $this->gettext( 'section_spam' ) ) ) . $table );
+    $spam = html::tag('fieldset', ( $this->storage->get_policy_access( 'allow_spam_settings' ) ? null : array( 'style' => 'display: none' ) ), html::tag('legend', null, Q( $this->gettext( 'section_spam' ) ) ) . $table );
     
     
     /*
@@ -145,7 +146,8 @@ class amacube_remix_policy extends rcube_plugin
                       );
     
     # Virus Check Quarantine Settings
-    $tr[] = html::tag( 'tr', array( 'id' => 'virus_check_quarantine_settings', 'style' => ( $this->storage->is_check_activated_checkbox( 'virus' ) ) ? 'display: table-row' : 'display: none' ),
+    $tr[] = html::tag( 'tr', array( 'id' => 'virus_check_quarantine_settings'.( $this->storage->get_policy_access( array( 'allow_virus_settings','allow_virus_settings_destination') ) ? '' : '_hidden'),
+                                    'style' => ( $this->storage->is_check_activated_checkbox( 'virus' ) && $this->storage->get_policy_access( array( 'allow_virus_settings','allow_virus_settings_destination') ) ) ? 'display: table-row' : 'display: none' ),
                       html::tag( 'td', array( 'class' => 'title' ), html::label( 'virus_check_destination', Q( $this->gettext( 'section_virus_settings' ) ) ) ) .
                       html::tag( 'td', null,
                                 html::tag( 'select', array( 'name' => '_virus_check_destination' ),
@@ -158,9 +160,9 @@ class amacube_remix_policy extends rcube_plugin
     $table = '';
     foreach( $tr AS $row )
       $table .= $row;
-    
+
     $table = html::tag( 'table', array( 'class' => 'propform', 'cols' => '2' ), $table );
-    $virus = html::tag('fieldset', null, html::tag('legend', null, Q( $this->gettext( 'section_virus' ) ) ) . $table );
+    $virus = html::tag('fieldset', ( $this->storage->get_policy_access( 'allow_virus_settings' ) ? null : array( 'style' => 'display: none' ) ), html::tag('legend', null, Q( $this->gettext( 'section_virus' ) ) ) . $table );
     
     
     /*
@@ -175,7 +177,8 @@ class amacube_remix_policy extends rcube_plugin
                       );
     
     # Banned Files Check Quarantine Settings
-    $tr[] = html::tag( 'tr', array( 'id' => 'banned_check_quarantine_settings', 'style' => ( $this->storage->is_check_activated_checkbox( 'banned' ) ) ? 'display: table-row' : 'display: none' ),
+    $tr[] = html::tag( 'tr', array( 'id' => 'banned_check_quarantine_settings'.( $this->storage->get_policy_access( array( 'allow_banned_files_settings','allow_banned_files_settings_destination') ) ? '' : '_hidden'),
+                                    'style' => ( $this->storage->is_check_activated_checkbox( 'banned' ) && $this->storage->get_policy_access( array( 'allow_banned_files_settings','allow_banned_files_settings_destination') ) ) ? 'display: table-row' : 'display: none' ),
                       html::tag( 'td', array( 'class' => 'title' ), html::label( 'banned_check_destination', Q( $this->gettext( 'section_banned_settings' ) ) ) ) .
                       html::tag( 'td', null,
                                 html::tag( 'select', array( 'name' => '_banned_check_destination' ),
@@ -190,21 +193,22 @@ class amacube_remix_policy extends rcube_plugin
       $table .= $row;
     
     $table = html::tag( 'table', array( 'class' => 'propform', 'cols' => '2' ), $table );
-    $banned = html::tag('fieldset', null, html::tag('legend', null, Q( $this->gettext( 'section_banned' ) ) ) . $table );
+    $banned = html::tag('fieldset', ( $this->storage->get_policy_access( 'allow_banned_files_settings' ) ? null : array( 'style' => 'display: none' ) ), html::tag('legend', null, Q( $this->gettext( 'section_banned' ) ) ) . $table );
     
     /*
      * Bad Headers Table
      */
     $tr = array();
     
-    # Banned Files Check Toggle
+    # Bad Headers Check Toggle
     $tr[] = html::tag( 'tr', null,
                       html::tag( 'td', array( 'class' => 'title' ), html::label( 'header_check_toggle', Q( $this->gettext( 'section_header_check' ) ) ) ) .
                       html::tag( 'td', null, $this->_show_checkbox( 'header_check_toggle', $this->storage->is_check_activated_checkbox( 'header' ) ) )
                       );
     
-    # Banned Files Check Quarantine Settings
-    $tr[] = html::tag( 'tr', array( 'id' => 'header_check_quarantine_settings', 'style' => ( $this->storage->is_check_activated_checkbox( 'header' ) ) ? 'display: table-row' : 'display: none' ),
+    # Bad Headers Check Quarantine Settings
+    $tr[] = html::tag( 'tr', array( 'id' => 'header_check_quarantine_settings'.( $this->storage->get_policy_access( array( 'allow_bad_header_settings','allow_bad_header_settings_destination') ) ? '' : '_hidden'),
+                                    'style' => ( $this->storage->is_check_activated_checkbox( 'header' ) && $this->storage->get_policy_access( array( 'allow_bad_header_settings','allow_bad_header_settings_destination') ) ) ? 'display: table-row' : 'display: none' ),
                       html::tag( 'td', array( 'class' => 'title' ), html::label( 'header_check_destination', Q( $this->gettext( 'section_header_settings' ) ) ) ) .
                       html::tag( 'td', null,
                                 html::tag( 'select', array( 'name' => '_header_check_destination' ),
@@ -219,7 +223,7 @@ class amacube_remix_policy extends rcube_plugin
       $table .= $row;
     
     $table = html::tag( 'table', array( 'class' => 'propform', 'cols' => '2' ), $table );
-    $header = html::tag( 'fieldset', null, html::tag( 'legend', null, Q( $this->gettext( 'section_header' ) ) ) . $table );
+    $header = html::tag( 'fieldset', ( $this->storage->get_policy_access( 'allow_bad_header_settings' ) ? null : array( 'style' => 'display: none' ) ), html::tag( 'legend', null, Q( $this->gettext( 'section_header' ) ) ) . $table );
     
     # Assemble Form
     $form = $this->rcmail->output->form_tag( array(
